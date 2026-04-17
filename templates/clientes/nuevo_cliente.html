@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Registrar nuevo cliente</h2>
+
+    <form method="POST">
+
+        <!-- Nombre -->
+        <label class="fw-bold mt-3">Nombre</label>
+        <input type="text" name="nombre" class="form-control" required>
+
+        <!-- 🔥 NUEVO: RAZÓN SOCIAL -->
+        <label class="fw-bold mt-3">Razón social</label>
+        <input type="text" name="razon_social" class="form-control">
+
+        <!-- Empresa o Particular -->
+        <label class="fw-bold mt-3">Tipo de cliente</label>
+        <select name="tipo_cliente" class="form-select" required>
+            <option value="empresa">Empresa</option>
+            <option value="particular">Particular</option>
+        </select>
+
+        <!-- Tipo de actividad -->
+        <label class="fw-bold mt-3">Tipo de actividad</label>
+        <input type="text" name="tipo_actividad" class="form-control">
+
+        <!-- NIF/CIF -->
+        <label class="fw-bold mt-3">NIF/CIF</label>
+        <input type="text" name="nif" class="form-control">
+
+        <!-- Dirección -->
+        <label class="fw-bold mt-3">Dirección</label>
+        <input type="text" name="direccion" class="form-control">
+
+        <!-- Teléfono -->
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" name="telefono" class="form-control" required>
+        </div>
+
+        <!-- Ciudad -->
+        <label class="fw-bold mt-3">Ciudad</label>
+        <input type="text" name="ciudad" class="form-control">
+
+        <!-- 🔥 NUEVO: POBLACIÓN -->
+        <label class="fw-bold mt-3">Población</label>
+        <input type="text" name="poblacion" class="form-control">
+
+        <!-- Código Postal -->
+        <label class="fw-bold mt-3">Código Postal</label>
+        <input type="text" name="codigo_postal" class="form-control">
+
+        <!-- Email -->
+        <label class="fw-bold mt-3">Email</label>
+        <input type="email" name="email" class="form-control">
+
+        <!-- Cómo nos conoció -->
+        <label class="fw-bold mt-3">¿Cómo nos conoció?</label>
+        <select name="como_nos_conocio" class="form-select">
+            <option>Google</option>
+            <option>Web</option>
+            <option>Redes Sociales</option>
+            <option>Recomendación</option>
+            <option>Publicidad</option>
+            <option>Otro</option>
+        </select>
+
+        <!-- Observaciones -->
+        <label class="fw-bold mt-3">Observaciones</label>
+        <textarea name="observaciones" class="form-control"></textarea>
+
+        <button class="btn btn-success mt-4">Guardar cliente</button>
+    </form>
+</div>
+
+{% endblock %}

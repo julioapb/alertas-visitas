@@ -1,0 +1,1 @@
+from .routes import alertas_bp

@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex align-items-center mb-4">
+        <h2 class="m-0">Panel de alertas</h2>
+    </div>
+
+    <!-- ===================== -->
+    <!-- FILTROS -->
+    <!-- ===================== -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="GET" class="row g-3">
+
+                <div class="col-12 col-md-4">
+                    <label class="form-label">Buscar cliente</label>
+                    <input type="text" name="cliente" class="form-control"
+                        value="{{ request.args.get('cliente', '') }}">
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" name="desde" class="form-control"
+                        value="{{ request.args.get('desde', '') }}">
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" name="hasta" class="form-control"
+                        value="{{ request.args.get('hasta', '') }}">
+                </div>
+
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Filtrar
+                    </button>
+                </div>
+
+                <div class="col-12 text-end">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm mt-2">
+                        Limpiar filtros
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- VISITAS -->
+    <!-- ===================== -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark fw-bold">
+            Visitas próximas / pendientes
+        </div>
+
+        <div class="card-body">
+
+            {% if alertas_visitas %}
+
+            <!-- 📱 MOBILE -->
+            <div class="d-md-none">
+
+                {% for a in alertas_visitas %}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+
+                        <h5 class="fw-bold">{{ a[1] }}</h5>
+
+                        <p class="mb-1">📅 Visita: {{ a[2] }}</p>
+                        <p class="mb-2 text-muted">Alerta: {{ a[3] }}</p>
+
+                        <form method="POST" action="{{ url_for('alertas.alerta_realizada', id_alerta=a[0]) }}">
+                            <button type="submit" class="btn btn-success w-100 mb-2">
+                                Realizada
+                            </button>
+                        </form>
+
+                        <form method="POST" action="{{ url_for('alertas.alerta_no_realizada', id_alerta=a[0]) }}">
+                            <button type="submit" class="btn btn-danger w-100 mb-2">
+                                No realizada
+                            </button>
+                        </form>
+
+                        <!-- BOTÓN REPROGRAMAR MOBILE -->
+                        <button type="button"
+                                class="btn btn-warning w-100"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalReprogramar{{ a[4] }}">
+                            Reprogramar
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- MODAL REPROGRAMAR MOBILE -->
+                <div class="modal fade" id="modalReprogramar{{ a[4] }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form method="POST" action="{{ url_for('alertas.reprogramar_visita', id_visita=a[4]) }}">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Reprogramar visita</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                          <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                          <p><strong>Fecha actual:</strong> {{ a[2] }}</p>
+
+                          <div class="mb-3">
+                            <label class="form-label">Nueva fecha</label>
+                            <input type="date" name="nueva_fecha" class="form-control" required>
+                          </div>
+                        </div>
+
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-warning">Guardar cambio</button>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- 💻 DESKTOP -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Fecha visita</th>
+                            <th>Alerta desde</th>
+                            <th class="text-center" style="min-width: 330px;">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for a in alertas_visitas %}
+                        <tr>
+
+                            <td class="fw-bold">{{ a[1] }}</td>
+                            <td>{{ a[2] }}</td>
+                            <td>{{ a[3] }}</td>
+
+                            <td>
+                                <div class="d-flex gap-2 justify-content-center flex-wrap">
+
+                                    <form method="POST" action="{{ url_for('alertas.alerta_realizada', id_alerta=a[0]) }}">
+    
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="certificado" value="si">
+                                            <label class="form-check-label">Certificado</label>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Realizada
+                                        </button>
+
+                                    </form>
+
+                                    <form method="POST" action="{{ url_for('alertas.alerta_no_realizada', id_alerta=a[0]) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            No realizada
+                                        </button>
+                                    </form>
+
+                                    <!-- BOTÓN REPROGRAMAR DESKTOP -->
+                                    <button type="button"
+                                            class="btn btn-warning btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalReprogramarDesktop{{ a[4] }}">
+                                        Reprogramar
+                                    </button>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        <!-- MODAL REPROGRAMAR DESKTOP -->
+                        <div class="modal fade" id="modalReprogramarDesktop{{ a[4] }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <form method="POST" action="{{ url_for('alertas.reprogramar_visita', id_visita=a[4]) }}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Reprogramar visita</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                  <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                                  <p><strong>Fecha actual:</strong> {{ a[2] }}</p>
+
+                                  <div class="mb-3">
+                                    <label class="form-label">Nueva fecha</label>
+                                    <input type="date" name="nueva_fecha" class="form-control" required>
+                                  </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-warning">Guardar cambio</button>
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            {% else %}
+                <p class="text-muted">No hay alertas de visitas pendientes.</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- RENOVACIONES -->
+    <!-- ===================== -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-info text-dark fw-bold">
+            Clientes por renovar
+        </div>
+
+        <div class="card-body">
+
+            {% if alertas_renov %}
+
+            <!-- 📱 MOBILE -->
+            <div class="d-md-none">
+
+                {% for a in alertas_renov %}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+
+                        <h5 class="fw-bold">{{ a[1] }}</h5>
+
+                        <p class="mb-1">📅 Vence: {{ a[2] }}</p>
+                        <p class="mb-2 text-muted">Alerta: {{ a[3] }}</p>
+
+                        <a href="#" class="btn btn-primary w-100">
+                            Renovar cliente
+                        </a>
+
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- 💻 DESKTOP -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Vence</th>
+                            <th>Alerta desde</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for a in alertas_renov %}
+                        <tr>
+
+                            <td class="fw-bold">{{ a[1] }}</td>
+                            <td>{{ a[2] }}</td>
+                            <td>{{ a[3] }}</td>
+
+                            <td class="text-center">
+                                <a href="#" class="btn btn-primary btn-sm">
+                                    Renovar
+                                </a>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            {% else %}
+                <p class="text-muted">No hay alertas de renovación pendientes.</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

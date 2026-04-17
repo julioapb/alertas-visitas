@@ -1,0 +1,5 @@
+MYSQL_HOST = 'localhost'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = ''
+MYSQL_DB = 'alertas'
+SECRET_KEY = 'S3g5r1d4d123--'

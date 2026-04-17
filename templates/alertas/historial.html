@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Historial de alertas</h2>
+
+    <!-- ===================== -->
+    <!-- FILTROS -->
+    <!-- ===================== -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="GET" class="row g-3">
+
+                <div class="col-12 col-md-4">
+                    <label class="form-label">Buscar cliente</label>
+                    <input type="text" name="cliente" class="form-control"
+                        value="{{ request.args.get('cliente', '') }}">
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Tipo</label>
+                    <select name="tipo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="visita" {% if request.args.get('tipo') == 'visita' %}selected{% endif %}>Visitas</option>
+                        <option value="renovacion" {% if request.args.get('tipo') == 'renovacion' %}selected{% endif %}>Renovación</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select name="estado" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="realizada" {% if request.args.get('estado') == 'realizada' %}selected{% endif %}>Realizada</option>
+                        <option value="no_realizada" {% if request.args.get('estado') == 'no_realizada' %}selected{% endif %}>No realizada</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" name="desde" class="form-control"
+                           value="{{ request.args.get('desde','') }}">
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" name="hasta" class="form-control"
+                           value="{{ request.args.get('hasta','') }}">
+                </div>
+
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">
+                        Filtrar
+                    </button>
+                </div>
+
+                <div class="col-12 text-end">
+                    <a href="{{ url_for('alertas.historial_alertas') }}"
+                       class="btn btn-secondary btn-sm mt-2">
+                        Limpiar filtros
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- RESULTADOS -->
+    <!-- ===================== -->
+
+    {% if historial %}
+
+    <!-- 📱 MOBILE (CARDS) -->
+    <div class="d-md-none">
+
+        {% for h in historial %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+
+                <h5 class="fw-bold">{{ h[1] }}</h5>
+
+                <p class="mb-1">
+                    {% if h[2] == 'visita' %}
+                        <span class="badge bg-primary">Visita</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Renovación</span>
+                    {% endif %}
+                </p>
+
+                <p class="mb-1">
+                    {% if h[3] %}
+                        <span class="badge bg-info text-dark">{{ h[3] }}</span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </p>
+
+                <p class="mb-1">📅 Alerta: {{ h[5] }}</p>
+                <p class="mb-1">✅ Atendida: {{ h[6] }}</p>
+
+                <p class="mt-2">
+                    {% if h[4] == 'realizada' %}
+                        <span class="badge bg-success">Realizada</span>
+                    {% else %}
+                        <span class="badge bg-danger">No realizada</span>
+                    {% endif %}
+                </p>
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- 💻 DESKTOP (TABLA) -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-bordered table-striped align-middle">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Plaga</th>
+                    <th>Fecha alerta</th>
+                    <th>Fecha atendida</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for h in historial %}
+                <tr>
+
+                    <td class="fw-bold">{{ h[1] }}</td>
+
+                    <td>
+                        {% if h[2] == 'visita' %}
+                            <span class="badge bg-primary">Visita</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Renovación</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if h[3] %}
+                            <span class="badge bg-info text-dark">{{ h[3] }}</span>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>{{ h[5] }}</td>
+                    <td>{{ h[6] }}</td>
+
+                    <td>
+                        {% if h[4] == 'realizada' %}
+                            <span class="badge bg-success">Realizada</span>
+                        {% else %}
+                            <span class="badge bg-danger">No realizada</span>
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+        <div class="alert alert-info">
+            No se encontraron resultados con los filtros seleccionados
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

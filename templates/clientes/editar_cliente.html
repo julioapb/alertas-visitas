@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h2 class="mb-2 mb-md-0">Editar Cliente</h2>
+
+        <a href="{{ url_for('clientes.clientes') }}" class="btn btn-secondary">
+            Volver
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="row g-3">
+
+                    <!-- NOMBRE -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Nombre del cliente</label>
+                        <input type="text" name="nombre" class="form-control"
+                               value="{{ cliente[1] }}" required>
+                    </div>
+
+                    <!-- Razon social -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Razón social</label>
+                        <input type="text" name="razon_social" class="form-control"
+                               value="{{ cliente[14] }}">
+                    </div>
+
+                    <!-- TIPO -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Tipo de cliente</label>
+                        <select name="tipo_cliente" class="form-select">
+                            <option value="empresa" {% if cliente[7] == 'empresa' %}selected{% endif %}>Empresa</option>
+                            <option value="particular" {% if cliente[7] == 'particular' %}selected{% endif %}>Particular</option>
+                        </select>
+                    </div>                    
+
+                    <!-- ACTIVIDAD -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Tipo de actividad</label>
+                        <input type="text" name="tipo_actividad" class="form-control"
+                               value="{{ cliente[8] }}">
+                    </div>
+
+                    <!-- NIF -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">NIF / CIF</label>
+                        <input type="text" name="nif" class="form-control"
+                               value="{{ cliente[11] }}">
+                    </div>
+
+                     <!-- TELÉFONO -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control"
+                               value="{{ cliente[3] }}">
+                    </div>
+
+                     <!-- EMAIL -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ cliente[4] }}">
+                    </div>
+
+                    <!-- DIRECCIÓN -->
+                    <div class="col-12">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" name="direccion" class="form-control"
+                               value="{{ cliente[5] }}">
+                    </div>
+
+                   
+
+                    <!-- CIUDAD -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">Ciudad</label>
+                        <input type="text" name="ciudad" class="form-control"
+                               value="{{ cliente[13] }}">
+                    </div>
+
+                     <!-- Poblacion -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">Población</label>
+                        <input type="text" name="poblacion" class="form-control"
+                               value="{{ cliente[15] }}">
+                    </div>
+
+                    <!-- CP -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">Código Postal</label>
+                        <input type="text" name="codigo_postal" class="form-control"
+                               value="{{ cliente[9] }}">
+                    </div>
+
+                   
+
+                    <!-- COMO NOS CONOCIÓ -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Cómo nos conoció</label>
+                        <input type="text" name="como_nos_conocio" class="form-control"
+                               value="{{ cliente[10] }}">
+                    </div>
+
+                    <!-- OBSERVACIONES -->
+                    <div class="col-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" class="form-control" rows="3">
+{{ cliente[14] if cliente|length > 14 else '' }}
+                        </textarea>
+                    </div>
+
+                     
+
+                </div>
+
+                <!-- BOTONES -->
+                <div class="d-flex flex-column flex-md-row gap-2 mt-4">
+
+                    <button class="btn btn-primary w-100">
+                        Guardar cambios
+                    </button>
+
+                    <a href="{{ url_for('clientes.clientes') }}" class="btn btn-secondary w-100">
+                        Cancelar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

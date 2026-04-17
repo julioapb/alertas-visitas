@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Panel de alertassss</h2>
+
+    <!-- FILTROS -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">Buscar clienteeeee</label>
+                    <input type="text" name="cliente" class="form-control" 
+                           placeholder="Nombre del cliente"
+                           value="{{ request.args.get('cliente', '') }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" name="desde" class="form-control"
+                           value="{{ request.args.get('desde', '') }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" name="hasta" class="form-control"
+                           value="{{ request.args.get('hasta', '') }}">
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                </div>
+
+                <div class="col-md-12 d-flex justify-content-end">
+                    <a href="{{ url_for('alertas.panel_alertas') }}" class="btn btn-secondary btn-sm mt-2">
+                        Limpiar filtros
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ALERTAS DE VISITAS -->
+    <h4 class="mt-4">Visitas próximas / pendientes</h4>
+
+    {% if visitas_pend %}
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Fecha visita</th>
+                <th>Alerta desde</th>
+                <th>Tipo plaga</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in visitas_pend %}
+            <tr>
+                <td>{{ a[1] }}</td>
+                <td>{{ a[2].strftime('%d/%m/%Y') if a[2] else '' }}</td>
+                <td>{{ a[3].strftime('%d/%m/%Y') if a[3] else '' }}</td>
+                <td>{{ a[5] if a[5] else 'No especificado' }}</td>
+                <td class="d-flex flex-wrap gap-1">
+
+                    <!-- BOTÓN: REALIZADA -->
+                    <form action="{{ url_for('alertas.alerta_realizada', id_alerta=a[0]) }}"
+                          method="POST" style="display:inline;">
+                        <button class="btn btn-success btn-sm">Realizada</button>
+                    </form>
+
+                    <!-- BOTÓN: NO REALIZADA -->
+                    <form action="{{ url_for('alertas.alerta_no_realizada', id_alerta=a[0]) }}"
+                          method="POST" style="display:inline;">
+                        <button class="btn btn-danger btn-sm">No realizada</button>
+                    </form>
+
+                    <!-- BOTÓN: REPROGRAMAR -->
+                    <button class="btn btn-primary btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalReprogramar{{ a[4] }}">
+                        Reprogramar
+                    </button>
+
+                </td>
+            </tr>
+
+            <!-- MODAL REPROGRAMAR -->
+            <div class="modal fade" id="modalReprogramar{{ a[4] }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form method="POST" action="{{ url_for('alertas.reprogramar_visita', id_visita=a[4]) }}">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Reprogramar visita</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                      <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                      <p><strong>Fecha actual:</strong> {{ a[2].strftime('%d/%m/%Y') if a[2] else '' }}</p>
+                      <p><strong>Tipo de plaga:</strong> {{ a[5] if a[5] else 'No especificado' }}</p>
+
+                      <div class="mb-3">
+                        <label class="form-label">Nueva fecha</label>
+                        <input type="date" name="nueva_fecha" class="form-control" required>
+                      </div>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Guardar cambio</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+      <p>No hay alertas de visitas pendientes.</p>
+    {% endif %}
+
+
+    <!-- ALERTAS DE RENOVACIÓN -->
+    <h4 class="mt-4">Licencias por renovar</h4>
+
+    {% if renovaciones %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Vence</th>
+                <th>Alerta desde</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in renovaciones %}
+            <tr>
+                <td>{{ a[1] }}</td>
+                <td>{{ a[2].strftime('%d/%m/%Y') if a[2] else '' }}</td>
+                <td>{{ a[3].strftime('%d/%m/%Y') if a[3] else '' }}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" disabled>Pendiente implementar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+      <p>No hay alertas de renovación pendientes.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}
