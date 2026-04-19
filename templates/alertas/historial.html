@@ -99,15 +99,14 @@
                 </p>
 
                 <p class="mb-1">📅 Alerta: {{ h[5] }}</p>
-                <p class="mb-1">✅ Atendida: {{ h[6] }}</p>
 
-                <p class="mt-2">
-                    {% if h[4] == 'realizada' %}
-                        <span class="badge bg-success">Realizada</span>
-                    {% else %}
-                        <span class="badge bg-danger">No realizada</span>
-                    {% endif %}
-                </p>
+                {% if h[4] == 'realizada' %}
+                    <p class="mb-1">✅ Realizada: {{ h[6] }}</p>
+                {% elif h[4] == 'no_realizada' %}
+                    <p class="mb-1">❌ No realizada: {{ h[6] }}</p>
+                {% elif h[4] == 'reprogramada' %}
+                    <p class="mb-1">🔁 Reprogramada: {{ h[6] }}</p>
+                {% endif %}
 
             </div>
         </div>
@@ -125,11 +124,9 @@
                     <th>Tipo</th>
                     <th>Plaga</th>
                     <th>Fecha alerta</th>
-                    <th>Fecha atendida</th>
-                    <th>Estado</th>
+                    <th>Resultado</th>
                 </tr>
             </thead>
-
             <tbody>
 
                 {% for h in historial %}
@@ -154,21 +151,24 @@
                     </td>
 
                     <td>{{ h[5] }}</td>
-                    <td>{{ h[6] }}</td>
 
+                    <!-- 🔥 RESULTADO + FECHA -->
                     <td>
                         {% if h[4] == 'realizada' %}
-                            <span class="badge bg-success">Realizada</span>
-                        {% else %}
-                            <span class="badge bg-danger">No realizada</span>
+                            <span class="text-success fw-bold">✔ Realizada</span><br>
+                            <small>{{ h[6] }}</small>
+                        {% elif h[4] == 'no_realizada' %}
+                            <span class="text-danger fw-bold">✖ No realizada</span><br>
+                            <small>{{ h[6] }}</small>
+                        {% elif h[4] == 'reprogramada' %}
+                            <span class="text-warning fw-bold">🔁 Reprogramada</span><br>
+                            <small>{{ h[6] }}</small>
                         {% endif %}
                     </td>
 
                 </tr>
                 {% endfor %}
-
             </tbody>
-
         </table>
     </div>
 
