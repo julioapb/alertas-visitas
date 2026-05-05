@@ -86,6 +86,14 @@
                         Reprogramar
                     </button>
 
+                    <!-- BOTÓN: ELIMINAR -->
+                    <button class="btn btn-outline-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEliminar{{ a[4] }}"
+                            title="Eliminar esta visita (sin afectar historial)">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+
                 </td>
             </tr>
 
@@ -112,6 +120,35 @@
 
                     <div class="modal-footer">
                       <button type="submit" class="btn btn-primary">Guardar cambio</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- MODAL ELIMINAR -->
+            <div class="modal fade" id="modalEliminar{{ a[4] }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form method="POST" action="{{ url_for('alertas.eliminar_visita', id_visita=a[4]) }}">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Eliminar visita</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                      <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                      <p><strong>Fecha:</strong> {{ a[2].strftime('%d/%m/%Y') if a[2] else '' }}</p>
+                      <p><strong>Tipo de plaga:</strong> {{ a[5] if a[5] else 'No especificado' }}</p>
+                      
+                      <div class="alert alert-warning" role="alert">
+                        <strong>⚠️ Atención:</strong> Esta visita se eliminará completamente sin dejar registro en el historial.
+                      </div>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-danger">Sí, eliminar</button>
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                   </form>

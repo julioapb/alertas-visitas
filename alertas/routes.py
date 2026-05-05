@@ -365,3 +365,55 @@ def reprogramar_visita(id_visita):
 
     cur.close()
     return redirect(request.referrer)
+
+
+# Eliminar visita (sin afectar historial)
+@alertas_bp.route('/eliminar_visita/<int:id_visita>', methods=['POST'])
+def eliminar_visita(id_visita):
+    if 'usuario' not in session:
+        return redirect(url_for('auth.login'))
+
+    mysql = current_app.mysql
+    cur = mysql.connection.cursor()
+
+    try:
+        # 1. Verificar que la visita exista
+        cur.execute("""
+            SELECT id, id_cliente, fecha_visita
+            FROM visitas_programadas
+            WHERE id = %s
+        """, (id_visita,))
+        visita = cur.fetchone()
+
+        if not visita:
+            flash("La visita no existe.", "danger")
+            cur.close()
+            return redirect(request.referrer)
+
+        # 2. Eliminar registros del historial asociados a esta visita
+        cur.execute("""
+            DELETE FROM historial_alertas
+            WHERE id_visita = %s
+        """, (id_visita,))
+
+        # 3. Eliminar alerta asociada
+        cur.execute("""
+            DELETE FROM alertas
+            WHERE id_visita = %s
+        """, (id_visita,))
+
+        # 4. Eliminar visita programada
+        cur.execute("""
+            DELETE FROM visitas_programadas
+            WHERE id = %s
+        """, (id_visita,))
+
+        mysql.connection.commit()
+        flash("Visita eliminada correctamente.", "success")
+
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f"Error al eliminar la visita: {str(e)}", "danger")
+
+    cur.close()
+    return redirect(request.referrer)

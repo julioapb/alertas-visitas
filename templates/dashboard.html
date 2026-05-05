@@ -89,10 +89,19 @@
 
                         <!-- BOTÓN REPROGRAMAR MOBILE -->
                         <button type="button"
-                                class="btn btn-warning w-100"
+                                class="btn btn-warning w-100 mb-2"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalReprogramar{{ a[4] }}">
                             Reprogramar
+                        </button>
+
+                        <!-- BOTÓN ELIMINAR MOBILE -->
+                        <button type="button"
+                                class="btn btn-outline-danger w-100"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalEliminar{{ a[4] }}"
+                                title="Eliminar esta visita (sin afectar historial)">
+                            <i class="bi bi-trash"></i> Eliminar
                         </button>
 
                     </div>
@@ -120,6 +129,34 @@
 
                         <div class="modal-footer">
                           <button type="submit" class="btn btn-warning">Guardar cambio</button>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MODAL ELIMINAR MOBILE -->
+                <div class="modal fade" id="modalEliminar{{ a[4] }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form method="POST" action="{{ url_for('alertas.eliminar_visita', id_visita=a[4]) }}">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Eliminar visita</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                          <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                          <p><strong>Fecha:</strong> {{ a[2] }}</p>
+                          
+                          <div class="alert alert-warning" role="alert">
+                            <strong>⚠️ Atención:</strong> Esta visita se eliminará completamente sin dejar registro en el historial.
+                          </div>
+                        </div>
+
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         </div>
                       </form>
@@ -181,6 +218,15 @@
                                         Reprogramar
                                     </button>
 
+                                    <!-- BOTÓN ELIMINAR DESKTOP -->
+                                    <button type="button"
+                                            class="btn btn-outline-danger btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarDesktop{{ a[4] }}"
+                                            title="Eliminar esta visita (sin afectar historial)">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+
                                 </div>
                             </td>
 
@@ -208,6 +254,34 @@
 
                                 <div class="modal-footer">
                                   <button type="submit" class="btn btn-warning">Guardar cambio</button>
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- MODAL ELIMINAR DESKTOP -->
+                        <div class="modal fade" id="modalEliminarDesktop{{ a[4] }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <form method="POST" action="{{ url_for('alertas.eliminar_visita', id_visita=a[4]) }}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Eliminar visita</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                  <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                                  <p><strong>Fecha:</strong> {{ a[2] }}</p>
+                                  
+                                  <div class="alert alert-warning" role="alert">
+                                    <strong>⚠️ Atención:</strong> Esta visita se eliminará completamente sin dejar registro en el historial.
+                                  </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
                                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                 </div>
                               </form>
