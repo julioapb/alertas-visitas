@@ -192,7 +192,9 @@
                         <select name="id_licencia_tipo" class="form-select" required>
                             <option value="">Selecciona</option>
                             {% for tipo in tipos_licencia %}
-                                <option value="{{ tipo[0] }}">{{ tipo[1] }}</option>
+                                <option value="{{ tipo[0] }}">
+                                    {{ tipo[1] }} ({{ tipo[2] }} visitas)
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
