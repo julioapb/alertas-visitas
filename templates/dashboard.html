@@ -72,6 +72,16 @@
 
                         <h5 class="fw-bold">{{ a[1] }}</h5>
 
+                        <p class="mb-1"><strong>ID visita:</strong> #{{ a[4] }}</p>
+                        <p class="mb-1">
+                            <strong>Plaga:</strong>
+                            {% if a[5] %}
+                                <span class="badge bg-info text-dark">{{ a[5] }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+
                         <p class="mb-1">📅 Visita: {{ a[2] }}</p>
                         <p class="mb-2 text-muted">Alerta: {{ a[3] }}</p>
 
@@ -119,7 +129,9 @@
 
                         <div class="modal-body">
                           <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                          <p><strong>ID visita:</strong> #{{ a[4] }}</p>
                           <p><strong>Fecha actual:</strong> {{ a[2] }}</p>
+                          <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
 
                           <div class="mb-3">
                             <label class="form-label">Nueva fecha</label>
@@ -148,7 +160,9 @@
 
                         <div class="modal-body">
                           <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                          <p><strong>ID visita:</strong> #{{ a[4] }}</p>
                           <p><strong>Fecha:</strong> {{ a[2] }}</p>
+                          <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
                           
                           <div class="alert alert-warning" role="alert">
                             <strong>⚠️ Atención:</strong> Esta visita se eliminará completamente sin dejar registro en el historial.
@@ -174,7 +188,9 @@
                     <thead class="table-light">
                         <tr>
                             <th>Cliente</th>
+                            <th>ID visita</th>
                             <th>Fecha visita</th>
+                            <th>Plaga</th>
                             <th>Alerta desde</th>
                             <th class="text-center" style="min-width: 330px;">Acciones</th>
                         </tr>
@@ -185,7 +201,15 @@
                         <tr>
 
                             <td class="fw-bold">{{ a[1] }}</td>
+                            <td>#{{ a[4] }}</td>
                             <td>{{ a[2] }}</td>
+                            <td>
+                                {% if a[5] %}
+                                    <span class="badge bg-info text-dark">{{ a[5] }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>{{ a[3] }}</td>
 
                             <td>
@@ -244,7 +268,9 @@
 
                                 <div class="modal-body">
                                   <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                                  <p><strong>ID visita:</strong> #{{ a[4] }}</p>
                                   <p><strong>Fecha actual:</strong> {{ a[2] }}</p>
+                                  <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
 
                                   <div class="mb-3">
                                     <label class="form-label">Nueva fecha</label>
@@ -273,7 +299,9 @@
 
                                 <div class="modal-body">
                                   <p><strong>Cliente:</strong> {{ a[1] }}</p>
+                                  <p><strong>ID visita:</strong> #{{ a[4] }}</p>
                                   <p><strong>Fecha:</strong> {{ a[2] }}</p>
+                                  <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
                                   
                                   <div class="alert alert-warning" role="alert">
                                     <strong>⚠️ Atención:</strong> Esta visita se eliminará completamente sin dejar registro en el historial.

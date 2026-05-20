@@ -12,41 +12,57 @@
     </div>
 
     <!-- ===================== -->
-    <!-- HISTORIAL LICENCIAS -->
+    <!-- HISTORIAL VISITAS -->
     <!-- ===================== -->
-    <h4 class="mb-3">Historial de licencias</h4>
+    <h4 class="mb-3">Historial de visitas</h4>
 
-    {% if licencias %}
+    {% if historial_visitas %}
 
     <div class="table-responsive">
         <table class="table table-striped align-middle">
 
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
-                    <th>Tipo</th>
+                    <th>ID visita</th>
                     <th>Plaga</th>
-                    <th>Inicio</th>
-                    <th>Fin</th>
+                    <th>Importe</th>
                     <th>Estado</th>
+                    <th>Fecha alerta</th>
+                    <th>Fecha gestionada</th>
                 </tr>
             </thead>
 
             <tbody>
-                {% for l in licencias %}
+                {% for h in historial_visitas %}
                 <tr>
-                    <td>{{ l[0] }}</td>
-                    <td><span class="badge bg-primary">{{ l[1] }}</span></td>
-                    <td><span class="badge bg-warning text-dark">{{ l[2] }}</span></td>
-                    <td>{{ l[3] }}</td>
-                    <td>{{ l[4] }}</td>
+                    <td>#{{ h[0] }}</td>
                     <td>
-                        {% if l[5] == 1 %}
-                            <span class="badge bg-success">Activa</span>
+                        {% if h[1] %}
+                            <span class="badge bg-warning text-dark">{{ h[1] }}</span>
                         {% else %}
-                            <span class="badge bg-secondary">Inactiva</span>
+                            -
                         {% endif %}
                     </td>
+                    <td>
+                        {% if h[2] is not none %}
+                            {{ "%.2f"|format(h[2]) }} EUR
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if h[3] == 'realizada' %}
+                            <span class="badge bg-success">Realizada</span>
+                        {% elif h[3] == 'no_realizada' %}
+                            <span class="badge bg-danger">No realizada</span>
+                        {% elif h[3] == 'reprogramada' %}
+                            <span class="badge bg-warning text-dark">Reprogramada</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ h[3] }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ h[4] }}</td>
+                    <td>{{ h[5] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -56,7 +72,7 @@
 
     {% else %}
         <div class="alert alert-info">
-            Este cliente aún no tiene licencias.
+            Este cliente no tiene visitas en el historial.
         </div>
     {% endif %}
 
@@ -72,10 +88,10 @@
 
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
+                    <th>ID visita</th>
                     <th>Fecha visita</th>
                     <th>Plaga</th>
-                    <th>Estado</th>
+                    <th>Importe</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
@@ -84,7 +100,7 @@
                 {% for v in visitas_programadas %}
                 <tr>
 
-                    <td>{{ v[0] }}</td>
+                    <td>#{{ v[0] }}</td>
                     <td>{{ v[1] }}</td>
 
                     <td>
@@ -94,27 +110,20 @@
                     </td>
 
                     <td>
-                        {% if v[3] == 'pendiente' %}
-                            <span class="badge bg-warning text-dark">Pendiente</span>
-                        {% elif v[3] == 'realizada' %}
-                            <span class="badge bg-success">Realizada</span>
-                        {% elif v[3] == 'no_realizada' %}
-                            <span class="badge bg-danger">No realizada</span>
+                        {% if v[4] is not none %}
+                            {{ "%.2f"|format(v[4]) }} EUR
+                        {% else %}
+                            -
                         {% endif %}
                     </td>
 
                     <td class="text-center">
-
-                        {% if v[3] == 'pendiente' %}
                         <button type="button"
                                 class="btn btn-warning btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalReprogramar{{ v[0] }}">
                             Reprogramar
                         </button>
-                        {% else %}
-                            <span class="text-muted">Sin acciones</span>
-                        {% endif %}
 
                     </td>
 
@@ -171,7 +180,7 @@
 
     {% else %}
     <div class="alert alert-info">
-        Este cliente no tiene visitas programadas.
+        Este cliente no tiene visitas pendientes.
     </div>
     {% endif %}
 
@@ -187,7 +196,7 @@
 
                 <div class="row g-3">
 
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-3">
                         <label class="form-label">Frecuencia</label>
                         <select name="id_licencia_tipo" class="form-select" required>
                             <option value="">Selecciona</option>
@@ -199,7 +208,7 @@
                         </select>
                     </div>
 
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-3">
                         <label class="form-label">Tipo de plaga</label>
                         <select name="tipo_plaga" class="form-select" required>
                             <option value="">Selecciona</option>
@@ -217,10 +226,16 @@
                         </select>
                     </div>
 
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-3">
                         <label class="form-label">Fecha inicio</label>
                         <input type="date" name="fecha_inicio" class="form-control"
                                value="{{ fecha_hoy }}" required>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">Importe por visita</label>
+                        <input type="number" name="importe" class="form-control"
+                               min="0" step="0.01" inputmode="decimal" required>
                     </div>
 
                 </div>

@@ -48,40 +48,10 @@ def generar_alertas():
 # Panel de alertas
 @alertas_bp.route('/')
 def panel_alertas():
-    generar_alertas() 
     if 'usuario' not in session:
         return redirect(url_for('auth.login'))
 
-    mysql = current_app.mysql
-    cur = mysql.connection.cursor()
-
-    cur.execute("""
-        SELECT a.id, c.nombre, v.fecha_visita, a.fecha_alerta, v.id, v.tipo_plaga
-        FROM alertas a
-        JOIN clientes c ON a.id_cliente = c.id
-        JOIN visitas_programadas v ON a.id_visita = v.id
-        WHERE a.tipo = 'visita'
-        AND a.atendida = 0
-        ORDER BY a.fecha_alerta ASC
-    """)
-    visitas_pend = cur.fetchall()
-
-    cur.execute("""
-        SELECT a.id, c.nombre, lc.fecha_fin, a.fecha_alerta
-        FROM alertas a
-        JOIN clientes c ON a.id_cliente = c.id
-        JOIN licencias_cliente lc ON c.id = lc.id_cliente
-        WHERE a.tipo = 'renovacion'
-          AND a.atendida = 0
-        ORDER BY a.fecha_alerta ASC
-    """)
-    renovaciones = cur.fetchall()
-
-    return render_template(
-        'alertas/panel.html',
-        visitas_pend=visitas_pend,
-        renovaciones=renovaciones
-    )
+    return redirect(url_for('dashboard'))
 
 
 # Marcar como realizada
@@ -95,7 +65,7 @@ def alerta_realizada(id_alerta):
     certificado_valor = 'si' if certificado == 'si' else 'no'
 
     cur.execute("""
-        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga
+        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga, v.importe
         FROM alertas a
         LEFT JOIN visitas_programadas v ON a.id_visita = v.id
         WHERE a.id = %s
@@ -108,17 +78,19 @@ def alerta_realizada(id_alerta):
         tipo = alerta[2]
         id_visita = alerta[3]
         tipo_plaga = alerta[4]
+        importe = alerta[5]
 
         # 🔹 INSERT CON CERTIFICADO
         cur.execute("""
             INSERT INTO historial_alertas
-            (id_cliente, id_visita, tipo, tipo_plaga, fecha_alerta, fecha_atendida, estado, observacion, certificado)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (id_cliente, id_visita, tipo, tipo_plaga, importe, fecha_alerta, fecha_atendida, estado, observacion, certificado)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             id_cliente,
             id_visita,
             tipo,
             tipo_plaga,
+            importe,
             fecha_alerta,
             datetime.now(),
             'realizada',
@@ -140,7 +112,7 @@ def alerta_realizada(id_alerta):
     else:
         flash("No se encontró la alerta", "danger")
 
-    return redirect(url_for('alertas.panel_alertas'))
+    return redirect(url_for('dashboard'))
 
 
 # Marcar como no realizada
@@ -150,7 +122,7 @@ def alerta_no_realizada(id_alerta):
     cur = mysql.connection.cursor()
 
     cur.execute("""
-        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga
+        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga, v.importe
         FROM alertas a
         LEFT JOIN visitas_programadas v ON a.id_visita = v.id
         WHERE a.id = %s
@@ -163,16 +135,18 @@ def alerta_no_realizada(id_alerta):
         tipo = alerta[2]
         id_visita = alerta[3]
         tipo_plaga = alerta[4]
+        importe = alerta[5]
 
         cur.execute("""
             INSERT INTO historial_alertas
-            (id_cliente, id_visita, tipo, tipo_plaga, fecha_alerta, fecha_atendida, estado, observacion)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            (id_cliente, id_visita, tipo, tipo_plaga, importe, fecha_alerta, fecha_atendida, estado, observacion)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             id_cliente,
             id_visita,
             tipo,
             tipo_plaga,
+            importe,
             fecha_alerta,
             datetime.now(),
             'no_realizada',
@@ -193,7 +167,7 @@ def alerta_no_realizada(id_alerta):
     else:
         flash("No se encontró la alerta", "danger")
 
-    return redirect(url_for('alertas.panel_alertas'))
+    return redirect(url_for('dashboard'))
 
 # Historial de alertas
 @alertas_bp.route('/historial')
@@ -213,11 +187,13 @@ def historial_alertas():
             c.nombre,
             h.tipo,
             h.tipo_plaga,
+            COALESCE(h.importe, v.importe) AS importe,
             h.estado,
             h.fecha_alerta,
             h.fecha_atendida
         FROM historial_alertas h
         JOIN clientes c ON h.id_cliente = c.id
+        LEFT JOIN visitas_programadas v ON h.id_visita = v.id
         WHERE 1=1
     """
     params = []
@@ -277,7 +253,7 @@ def reprogramar_visita(id_visita):
 
         # Obtener datos actuales de la visita
         cur.execute("""
-            SELECT id, id_cliente, fecha_visita, estado, tipo_plaga
+            SELECT id, id_cliente, fecha_visita, estado, tipo_plaga, importe
             FROM visitas_programadas
             WHERE id = %s
         """, (id_visita,))
@@ -293,6 +269,7 @@ def reprogramar_visita(id_visita):
         fecha_anterior = visita[2]
         estado_actual = visita[3]
         tipo_plaga = visita[4]
+        importe = visita[5]
 
         # No permitir reprogramar si ya está realizada o no realizada
         if estado_actual in ['realizada', 'no_realizada']:
@@ -343,13 +320,14 @@ def reprogramar_visita(id_visita):
         # 3. Guardar historial
         cur.execute("""
             INSERT INTO historial_alertas
-            (id_cliente, id_visita, tipo, tipo_plaga, fecha_alerta, fecha_atendida, estado, observacion)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            (id_cliente, id_visita, tipo, tipo_plaga, importe, fecha_alerta, fecha_atendida, estado, observacion)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             id_cliente,
             id_visita,
             'visita',
             tipo_plaga,
+            importe,
             nueva_fecha_alerta,
             datetime.now(),
             'reprogramada',

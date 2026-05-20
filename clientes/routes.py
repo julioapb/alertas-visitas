@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask import current_app
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal, InvalidOperation
 import MySQLdb.cursors
 
 clientes_bp = Blueprint('clientes', __name__, template_folder='templates')
@@ -158,6 +159,15 @@ def licencias_cliente(id):
         id_licencia_tipo = request.form['id_licencia_tipo']
         fecha_inicio = request.form['fecha_inicio']
         tipo_plaga = request.form['tipo_plaga']
+        importe_raw = request.form.get('importe', '').strip().replace(',', '.')
+
+        try:
+            importe = Decimal(importe_raw)
+            if importe < 0:
+                raise InvalidOperation
+        except (InvalidOperation, ValueError):
+            flash("Introduce un importe valido.", "danger")
+            return redirect(url_for('clientes.licencias_cliente', id=id))
 
         # Desactivar licencias anteriores
         cur.execute("""
@@ -204,13 +214,14 @@ def licencias_cliente(id):
 
             cur.execute("""
                 INSERT INTO visitas_programadas
-                (id_cliente,fecha_visita,tipo_plaga,estado)
-                VALUES (%s,%s,%s,%s)
+                (id_cliente,fecha_visita,tipo_plaga,estado,importe)
+                VALUES (%s,%s,%s,%s,%s)
                 """, (
                     id,
                     fecha_visita.strftime("%Y-%m-%d"),
                     tipo_plaga,
-                    'pendiente'
+                    'pendiente',
+                    importe
                 ))
 
         current_app.mysql.connection.commit()
@@ -275,33 +286,35 @@ def licencias_cliente(id):
     # GET
     # ============================
 
-    # LICENCIAS
+    # HISTORIAL DE VISITAS
     cur.execute("""
     SELECT
-    lc.id,
-    lt.nombre,
-    lc.tipo_plaga,
-    lc.fecha_inicio,
-    lc.fecha_fin,
-    lc.activo
-    FROM licencias_cliente lc
-    JOIN licencias_tipo lt
-    ON lc.id_licencia_tipo=lt.id
-    WHERE lc.id_cliente=%s
-    ORDER BY lc.fecha_inicio DESC
+        h.id_visita,
+        h.tipo_plaga,
+        COALESCE(h.importe, vp.importe) AS importe,
+        h.estado,
+        h.fecha_alerta,
+        h.fecha_atendida
+    FROM historial_alertas h
+    LEFT JOIN visitas_programadas vp
+    ON h.id_visita=vp.id
+    WHERE h.id_cliente=%s
+      AND h.tipo='visita'
+    ORDER BY h.fecha_atendida DESC
     """, (id,))
 
-    licencias = cur.fetchall()
+    historial_visitas = cur.fetchall()
 
     # TIPOS LICENCIA
-    cur.execute("SELECT id,nombre FROM licencias_tipo")
+    cur.execute("SELECT id,nombre,visitas_por_anio FROM licencias_tipo")
     tipos_licencia = cur.fetchall()
 
     # 🔥 VISITAS PROGRAMADAS (AQUÍ ESTÁ LO NUEVO)
     cur.execute("""
-        SELECT id, fecha_visita, tipo_plaga, estado
+        SELECT id, fecha_visita, tipo_plaga, estado, importe
         FROM visitas_programadas
         WHERE id_cliente = %s
+          AND estado = 'pendiente'
         ORDER BY fecha_visita ASC
     """, (id,))
     visitas_programadas = cur.fetchall()
@@ -311,7 +324,7 @@ def licencias_cliente(id):
     return render_template(
         "clientes/licencias_cliente.html",
         cliente=cliente,
-        licencias=licencias,
+        historial_visitas=historial_visitas,
         tipos_licencia=tipos_licencia,
         visitas_programadas=visitas_programadas,  # 👈 IMPORTANTE
         fecha_hoy=fecha_hoy
@@ -350,11 +363,31 @@ def ver_cliente(id):
 
     proxima_revision = cur.fetchone()
 
+    cur.execute("""
+    SELECT
+        h.id_visita,
+        h.tipo,
+        h.tipo_plaga,
+        COALESCE(h.importe, vp.importe) AS importe,
+        h.estado,
+        h.fecha_alerta,
+        h.fecha_atendida
+    FROM historial_alertas h
+    LEFT JOIN visitas_programadas vp
+    ON h.id_visita=vp.id
+    WHERE h.id_cliente=%s
+      AND h.tipo='visita'
+    ORDER BY h.fecha_atendida DESC
+    """,(id,))
+
+    historial_visitas = cur.fetchall()
+
     return render_template(
         "clientes/detalle_cliente.html",
         cliente=cliente,
         revisiones=revisiones,
-        proxima_revision=proxima_revision
+        proxima_revision=proxima_revision,
+        historial_visitas=historial_visitas
     )
 
 

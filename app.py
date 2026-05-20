@@ -2,7 +2,7 @@ from flask import Flask
 from flask_mysqldb import MySQL
 from auth.routes import auth_bp
 from clientes.routes import clientes_bp
-from alertas.routes import alertas_bp
+from alertas.routes import alertas_bp, generar_alertas
 from flask import render_template, session, redirect, url_for, request
 from datetime import date
 from revisiones.routes import revisiones_bp
@@ -25,6 +25,8 @@ def dashboard():
     if 'usuario' not in session:
         return redirect(url_for('auth.login'))
 
+    generar_alertas()
+
     cur = mysql.connection.cursor()
 
     # =========================
@@ -38,7 +40,7 @@ def dashboard():
     # ALERTAS DE VISITAS
     # =========================
     query_visitas = """
-        SELECT a.id, c.nombre, v.fecha_visita, a.fecha_alerta, v.id
+        SELECT a.id, c.nombre, v.fecha_visita, a.fecha_alerta, v.id, v.tipo_plaga
         FROM alertas a
         JOIN clientes c ON a.id_cliente = c.id
         JOIN visitas_programadas v ON a.id_visita = v.id

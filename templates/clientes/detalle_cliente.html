@@ -90,6 +90,72 @@
 
     </div>
 
+    <h4 class="mb-3 mt-5">Historial de visitas</h4>
+
+    {% if historial_visitas %}
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID visita</th>
+                    <th>Tipo</th>
+                    <th>Plaga</th>
+                    <th>Importe</th>
+                    <th>Fecha alerta</th>
+                    <th>Resultado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in historial_visitas %}
+                <tr>
+                    <td>#{{ h.id_visita }}</td>
+                    <td>
+                        {% if h.tipo == 'visita' %}
+                            <span class="badge bg-primary">Visita</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Renovacion</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if h.tipo_plaga %}
+                            <span class="badge bg-info text-dark">{{ h.tipo_plaga }}</span>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if h.importe is not none %}
+                            {{ "%.2f"|format(h.importe) }} EUR
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ h.fecha_alerta }}</td>
+                    <td>
+                        {% if h.estado == 'realizada' %}
+                            <span class="text-success fw-bold">Realizada</span><br>
+                            <small>{{ h.fecha_atendida }}</small>
+                        {% elif h.estado == 'no_realizada' %}
+                            <span class="text-danger fw-bold">No realizada</span><br>
+                            <small>{{ h.fecha_atendida }}</small>
+                        {% elif h.estado == 'reprogramada' %}
+                            <span class="text-warning fw-bold">Reprogramada</span><br>
+                            <small>{{ h.fecha_atendida }}</small>
+                        {% else %}
+                            {{ h.estado }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-info">
+            Este cliente no tiene visitas en el historial.
+        </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}
