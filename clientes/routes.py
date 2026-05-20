@@ -184,7 +184,7 @@ def licencias_cliente(id):
 
         # Obtener configuración licencia
         cur.execute("""
-        SELECT visitas_por_anio,meses_entre_visitas
+        SELECT visitas_por_anio,meses_entre_visitas,nombre
         FROM licencias_tipo
         WHERE id=%s
         """, (id_licencia_tipo,))
@@ -193,6 +193,7 @@ def licencias_cliente(id):
 
         visitas_por_anio = tipo[0]
         meses_intervalo = tipo[1]
+        nombre_tipo = tipo[2]
 
         fecha_inicio_dt = datetime.strptime(fecha_inicio,"%Y-%m-%d")
 
@@ -241,29 +242,30 @@ def licencias_cliente(id):
                 fecha_alerta
             ))
 
-        # alerta renovación
-        cur.execute("""
-        SELECT fecha_fin
-        FROM licencias_cliente
-        WHERE id_cliente=%s AND activo=1
-        """, (id,))
-
-        lic = cur.fetchone()
-
-        if lic:
-
-            fecha_fin = lic[0]
-            fecha_alerta_renov = fecha_fin - relativedelta(days=30)
-
+        # alerta renovación (solo si no es Mensual)
+        if nombre_tipo != 'Mensual':
             cur.execute("""
-            INSERT INTO alertas
-            (id_cliente,tipo,descripcion,fecha_alerta)
-            VALUES (%s,'renovacion',%s,%s)
-            """, (
-                id,
-                f"La licencia vence el {fecha_fin}. Coordinar renovación.",
-                fecha_alerta_renov
-            ))
+            SELECT fecha_fin
+            FROM licencias_cliente
+            WHERE id_cliente=%s AND activo=1
+            """, (id,))
+
+            lic = cur.fetchone()
+
+            if lic:
+
+                fecha_fin = lic[0]
+                fecha_alerta_renov = fecha_fin - relativedelta(days=30)
+
+                cur.execute("""
+                INSERT INTO alertas
+                (id_cliente,tipo,descripcion,fecha_alerta)
+                VALUES (%s,'renovacion',%s,%s)
+                """, (
+                    id,
+                    f"La licencia vence el {fecha_fin}. Coordinar renovación.",
+                    fecha_alerta_renov
+                ))
 
         current_app.mysql.connection.commit()
 
