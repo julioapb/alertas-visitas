@@ -26,6 +26,7 @@
                     <th>ID visita</th>
                     <th>Plaga</th>
                     <th>Importe</th>
+                    <th>SF</th>
                     <th>Estado</th>
                     <th>Fecha alerta</th>
                     <th>Fecha gestionada</th>
@@ -51,18 +52,25 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if h[3] == 'realizada' %}
-                            <span class="badge bg-success">Realizada</span>
-                        {% elif h[3] == 'no_realizada' %}
-                            <span class="badge bg-danger">No realizada</span>
-                        {% elif h[3] == 'reprogramada' %}
-                            <span class="badge bg-warning text-dark">Reprogramada</span>
+                        {% if h[3] %}
+                            Sí
                         {% else %}
-                            <span class="badge bg-secondary">{{ h[3] }}</span>
+                            
                         {% endif %}
                     </td>
-                    <td>{{ h[4] }}</td>
+                    <td>
+                        {% if h[4] == 'realizada' %}
+                            <span class="badge bg-success">Realizada</span>
+                        {% elif h[4] == 'no_realizada' %}
+                            <span class="badge bg-danger">No realizada</span>
+                        {% elif h[4] == 'reprogramada' %}
+                            <span class="badge bg-warning text-dark">Reprogramada</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ h[4] }}</span>
+                        {% endif %}
+                    </td>
                     <td>{{ h[5] }}</td>
+                    <td>{{ h[6] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -92,6 +100,7 @@
                     <th>Fecha visita</th>
                     <th>Plaga</th>
                     <th>Importe</th>
+                    <th>SF</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
@@ -114,6 +123,13 @@
                             {{ "%.2f"|format(v[4]) }} EUR
                         {% else %}
                             -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if v[5] %}
+                            Sí
+                        {% else %}
+                            
                         {% endif %}
                     </td>
 
@@ -222,11 +238,12 @@
                             <option value="Avispas">Avispas</option>
                             <option value="Hormigas">Hormigas</option>
                             <option value="Termitas">Termitas</option>
+                            <option value="Tratamiento de choque">Tratamiento de choque</option>
                             <option value="Otros">Otros</option>
                         </select>
                     </div>
 
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-2">
                         <label class="form-label">Fecha inicio</label>
                         <input type="date" name="fecha_inicio" class="form-control"
                                value="{{ fecha_hoy }}" required>
@@ -236,6 +253,13 @@
                         <label class="form-label">Importe por visita</label>
                         <input type="number" name="importe" class="form-control"
                                min="0" step="0.01" inputmode="decimal" required>
+                    </div>
+
+                    <div class="col-12 col-md-1 d-flex align-items-end">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="sf" value="1" id="sf">
+                            <label class="form-check-label" for="sf">SF</label>
+                        </div>
                     </div>
 
                 </div>

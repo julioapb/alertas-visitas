@@ -101,6 +101,7 @@
                     <th>Tipo</th>
                     <th>Plaga</th>
                     <th>Importe</th>
+                    <th>SF</th>
                     <th>Fecha alerta</th>
                     <th>Resultado</th>
                 </tr>
@@ -130,6 +131,7 @@
                             -
                         {% endif %}
                     </td>
+                    <td>{{ 'Sí' if h.sf else '' }}</td>
                     <td>{{ h.fecha_alerta }}</td>
                     <td>
                         {% if h.estado == 'realizada' %}

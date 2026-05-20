@@ -100,14 +100,16 @@
                     {% endif %}
                 </p>
 
-                <p class="mb-1"><strong>Alerta:</strong> {{ h[6] }}</p>
+                <p class="mb-1"><strong>SF:</strong> {{ 'Sí' if h[5] else '' }}</p>
 
-                {% if h[5] == 'realizada' %}
-                    <p class="mb-1 text-success fw-bold">Realizada: {{ h[7] }}</p>
-                {% elif h[5] == 'no_realizada' %}
-                    <p class="mb-1 text-danger fw-bold">No realizada: {{ h[7] }}</p>
-                {% elif h[5] == 'reprogramada' %}
-                    <p class="mb-1 text-warning fw-bold">Reprogramada: {{ h[7] }}</p>
+                <p class="mb-1"><strong>Alerta:</strong> {{ h[7] }}</p>
+
+                {% if h[6] == 'realizada' %}
+                    <p class="mb-1 text-success fw-bold">Realizada: {{ h[8] }}</p>
+                {% elif h[6] == 'no_realizada' %}
+                    <p class="mb-1 text-danger fw-bold">No realizada: {{ h[8] }}</p>
+                {% elif h[6] == 'reprogramada' %}
+                    <p class="mb-1 text-warning fw-bold">Reprogramada: {{ h[8] }}</p>
                 {% endif %}
 
             </div>
@@ -125,6 +127,7 @@
                     <th>Tipo</th>
                     <th>Plaga</th>
                     <th>Importe</th>
+                    <th>SF</th>
                     <th>Fecha alerta</th>
                     <th>Resultado</th>
                 </tr>
@@ -160,18 +163,20 @@
                         {% endif %}
                     </td>
 
-                    <td>{{ h[6] }}</td>
+                    <td>{{ 'Sí' if h[5] else '' }}</td>
+
+                    <td>{{ h[7] }}</td>
 
                     <td>
-                        {% if h[5] == 'realizada' %}
+                        {% if h[6] == 'realizada' %}
                             <span class="text-success fw-bold">Realizada</span><br>
-                            <small>{{ h[7] }}</small>
-                        {% elif h[5] == 'no_realizada' %}
+                            <small>{{ h[8] }}</small>
+                        {% elif h[6] == 'no_realizada' %}
                             <span class="text-danger fw-bold">No realizada</span><br>
-                            <small>{{ h[7] }}</small>
-                        {% elif h[5] == 'reprogramada' %}
+                            <small>{{ h[8] }}</small>
+                        {% elif h[6] == 'reprogramada' %}
                             <span class="text-warning fw-bold">Reprogramada</span><br>
-                            <small>{{ h[7] }}</small>
+                            <small>{{ h[8] }}</small>
                         {% endif %}
                     </td>
 

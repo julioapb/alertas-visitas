@@ -1,0 +1,5 @@
+ALTER TABLE visitas_programadas
+    ADD COLUMN sf TINYINT(1) NULL DEFAULT NULL AFTER importe;
+
+ALTER TABLE historial_alertas
+    ADD COLUMN sf TINYINT(1) NULL DEFAULT NULL AFTER importe;

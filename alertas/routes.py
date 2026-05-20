@@ -65,7 +65,7 @@ def alerta_realizada(id_alerta):
     certificado_valor = 'si' if certificado == 'si' else 'no'
 
     cur.execute("""
-        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga, v.importe
+        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga, v.importe, v.sf
         FROM alertas a
         LEFT JOIN visitas_programadas v ON a.id_visita = v.id
         WHERE a.id = %s
@@ -79,18 +79,20 @@ def alerta_realizada(id_alerta):
         id_visita = alerta[3]
         tipo_plaga = alerta[4]
         importe = alerta[5]
+        sf = alerta[6]
 
         # 🔹 INSERT CON CERTIFICADO
         cur.execute("""
             INSERT INTO historial_alertas
-            (id_cliente, id_visita, tipo, tipo_plaga, importe, fecha_alerta, fecha_atendida, estado, observacion, certificado)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (id_cliente, id_visita, tipo, tipo_plaga, importe, sf, fecha_alerta, fecha_atendida, estado, observacion, certificado)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             id_cliente,
             id_visita,
             tipo,
             tipo_plaga,
             importe,
+            sf,
             fecha_alerta,
             datetime.now(),
             'realizada',
@@ -122,7 +124,7 @@ def alerta_no_realizada(id_alerta):
     cur = mysql.connection.cursor()
 
     cur.execute("""
-        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga, v.importe
+        SELECT a.id_cliente, a.fecha_alerta, a.tipo, a.id_visita, v.tipo_plaga, v.importe, v.sf
         FROM alertas a
         LEFT JOIN visitas_programadas v ON a.id_visita = v.id
         WHERE a.id = %s
@@ -136,17 +138,19 @@ def alerta_no_realizada(id_alerta):
         id_visita = alerta[3]
         tipo_plaga = alerta[4]
         importe = alerta[5]
+        sf = alerta[6]
 
         cur.execute("""
             INSERT INTO historial_alertas
-            (id_cliente, id_visita, tipo, tipo_plaga, importe, fecha_alerta, fecha_atendida, estado, observacion)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (id_cliente, id_visita, tipo, tipo_plaga, importe, sf, fecha_alerta, fecha_atendida, estado, observacion)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             id_cliente,
             id_visita,
             tipo,
             tipo_plaga,
             importe,
+            sf,
             fecha_alerta,
             datetime.now(),
             'no_realizada',
@@ -188,6 +192,7 @@ def historial_alertas():
             h.tipo,
             h.tipo_plaga,
             COALESCE(h.importe, v.importe) AS importe,
+            COALESCE(h.sf, v.sf) AS sf,
             h.estado,
             h.fecha_alerta,
             h.fecha_atendida
@@ -253,7 +258,7 @@ def reprogramar_visita(id_visita):
 
         # Obtener datos actuales de la visita
         cur.execute("""
-            SELECT id, id_cliente, fecha_visita, estado, tipo_plaga, importe
+            SELECT id, id_cliente, fecha_visita, estado, tipo_plaga, importe, sf
             FROM visitas_programadas
             WHERE id = %s
         """, (id_visita,))
@@ -270,6 +275,7 @@ def reprogramar_visita(id_visita):
         estado_actual = visita[3]
         tipo_plaga = visita[4]
         importe = visita[5]
+        sf = visita[6]
 
         # No permitir reprogramar si ya está realizada o no realizada
         if estado_actual in ['realizada', 'no_realizada']:
@@ -320,14 +326,15 @@ def reprogramar_visita(id_visita):
         # 3. Guardar historial
         cur.execute("""
             INSERT INTO historial_alertas
-            (id_cliente, id_visita, tipo, tipo_plaga, importe, fecha_alerta, fecha_atendida, estado, observacion)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (id_cliente, id_visita, tipo, tipo_plaga, importe, sf, fecha_alerta, fecha_atendida, estado, observacion)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             id_cliente,
             id_visita,
             'visita',
             tipo_plaga,
             importe,
+            sf,
             nueva_fecha_alerta,
             datetime.now(),
             'reprogramada',

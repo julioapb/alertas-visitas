@@ -160,6 +160,7 @@ def licencias_cliente(id):
         fecha_inicio = request.form['fecha_inicio']
         tipo_plaga = request.form['tipo_plaga']
         importe_raw = request.form.get('importe', '').strip().replace(',', '.')
+        sf = 1 if request.form.get('sf') == '1' else None
 
         try:
             importe = Decimal(importe_raw)
@@ -214,14 +215,15 @@ def licencias_cliente(id):
 
             cur.execute("""
                 INSERT INTO visitas_programadas
-                (id_cliente,fecha_visita,tipo_plaga,estado,importe)
-                VALUES (%s,%s,%s,%s,%s)
+                (id_cliente,fecha_visita,tipo_plaga,estado,importe,sf)
+                VALUES (%s,%s,%s,%s,%s,%s)
                 """, (
                     id,
                     fecha_visita.strftime("%Y-%m-%d"),
                     tipo_plaga,
                     'pendiente',
-                    importe
+                    importe,
+                    sf
                 ))
 
         current_app.mysql.connection.commit()
@@ -292,6 +294,7 @@ def licencias_cliente(id):
         h.id_visita,
         h.tipo_plaga,
         COALESCE(h.importe, vp.importe) AS importe,
+        COALESCE(h.sf, vp.sf) AS sf,
         h.estado,
         h.fecha_alerta,
         h.fecha_atendida
@@ -311,7 +314,7 @@ def licencias_cliente(id):
 
     # 🔥 VISITAS PROGRAMADAS (AQUÍ ESTÁ LO NUEVO)
     cur.execute("""
-        SELECT id, fecha_visita, tipo_plaga, estado, importe
+        SELECT id, fecha_visita, tipo_plaga, estado, importe, sf
         FROM visitas_programadas
         WHERE id_cliente = %s
           AND estado = 'pendiente'
@@ -369,6 +372,7 @@ def ver_cliente(id):
         h.tipo,
         h.tipo_plaga,
         COALESCE(h.importe, vp.importe) AS importe,
+        COALESCE(h.sf, vp.sf) AS sf,
         h.estado,
         h.fecha_alerta,
         h.fecha_atendida
