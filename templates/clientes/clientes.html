@@ -119,17 +119,17 @@
 <!-- 💻 DESKTOP (TABLA) -->
 <!-- ===================== -->
 <div class="table-responsive d-none d-md-block">
-    <table class="table mt-3 table-striped align-middle">
+    <table class="table mt-3 table-striped align-middle clients-table">
 
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Documento</th>
+                <th style="width: 60px;">Nº</th>
+                <th style="width: 240px;">Nombre</th>
+                <th style="width: 150px;">Documento</th>
                 <th>Teléfono</th>
-                <th>Email</th>
+                <th style="width: 260px;">Email</th>
                 <th>Dirección</th>
-                <th>Acciones</th>
+                <th style="width: 290px;">Acciones</th>
             </tr>
         </thead>
 
@@ -137,15 +137,15 @@
             {% for c in clientes %}
             <tr>
 
-                <td>{{ c[0] }}</td>
-                <td class="fw-bold">{{ c[1] }}</td>
-                <td>{{ c[11] }}</td>
-                <td>{{ c[3] }}</td>
-                <td>{{ c[4] }}</td>
-                <td>{{ c[5] }}</td>
+                <td>{{ loop.index }}</td>
+                <td class="fw-bold cell-truncate" title="{{ c[1] }}">{{ c[1] }}</td>
+                <td class="cell-truncate" title="{{ c[11] }}">{{ c[11] }}</td>
+                <td class="cell-truncate" title="{{ c[3] }}">{{ c[3] }}</td>
+                <td class="cell-truncate" title="{{ c[4] }}">{{ c[4] }}</td>
+                <td class="cell-truncate" title="{{ c[5] }}">{{ c[5] }}</td>
 
                 <td>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-nowrap">
 
                         <a href="{{ url_for('clientes.editar_cliente', id=c[0]) }}" class="btn btn-warning btn-sm">
                             Editar

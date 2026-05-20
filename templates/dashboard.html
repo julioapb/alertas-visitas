@@ -183,16 +183,16 @@
 
             <!-- 💻 DESKTOP -->
             <div class="table-responsive d-none d-md-block">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle dashboard-visits-table">
 
                     <thead class="table-light">
                         <tr>
-                            <th>Cliente</th>
-                            <th>ID visita</th>
-                            <th>Fecha visita</th>
-                            <th>Plaga</th>
-                            <th>Alerta desde</th>
-                            <th class="text-center" style="min-width: 330px;">Acciones</th>
+                            <th style="width: 34%;">Cliente</th>
+                            <th style="width: 8%;">ID visita</th>
+                            <th style="width: 10%;">Fecha visita</th>
+                            <th style="width: 10%;">Plaga</th>
+                            <th style="width: 10%;">Alerta desde</th>
+                            <th class="text-center" style="width: 28%;">Acciones</th>
                         </tr>
                     </thead>
 
@@ -200,7 +200,7 @@
                         {% for a in alertas_visitas %}
                         <tr>
 
-                            <td class="fw-bold">{{ a[1] }}</td>
+                            <td class="fw-bold cell-truncate" title="{{ a[1] }}">{{ a[1] }}</td>
                             <td>#{{ a[4] }}</td>
                             <td>{{ a[2] }}</td>
                             <td>
@@ -213,9 +213,9 @@
                             <td>{{ a[3] }}</td>
 
                             <td>
-                                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                <div class="dashboard-actions">
 
-                                    <form method="POST" action="{{ url_for('alertas.alerta_realizada', id_alerta=a[0]) }}">
+                                    <form method="POST" action="{{ url_for('alertas.alerta_realizada', id_alerta=a[0]) }}" class="certificado-action">
     
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="checkbox" name="certificado" value="si">
