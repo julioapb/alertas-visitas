@@ -337,6 +337,7 @@ def licencias_cliente(id):
     # HISTORIAL DE VISITAS
     cur.execute("""
     SELECT
+        h.id,
         h.id_visita,
         h.tipo_plaga,
         COALESCE(h.importe, vp.importe) AS importe,
@@ -414,6 +415,7 @@ def ver_cliente(id):
 
     cur.execute("""
     SELECT
+        h.id AS historial_id,
         h.id_visita,
         h.tipo,
         h.tipo_plaga,

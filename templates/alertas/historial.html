@@ -112,6 +112,16 @@
                     <p class="mb-1 text-warning fw-bold">Reprogramada: {{ h[8]|fecha_es }}</p>
                 {% endif %}
 
+                {% if h[2] == 'visita' and h[6] in ['realizada', 'no_realizada'] %}
+                    <form method="POST"
+                          action="/alertas/reversar_visita/{{ h[0] }}"
+                          onsubmit="return confirm('¿Reversar esta visita y devolverla al dashboard?');">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100 mt-2">
+                            Reversar
+                        </button>
+                    </form>
+                {% endif %}
+
             </div>
         </div>
         {% endfor %}
@@ -130,6 +140,7 @@
                     <th>SF</th>
                     <th>Fecha alerta</th>
                     <th>Resultado</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -177,6 +188,20 @@
                         {% elif h[6] == 'reprogramada' %}
                             <span class="text-warning fw-bold">Reprogramada</span><br>
                             <small>{{ h[8]|fecha_es }}</small>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-center">
+                        {% if h[2] == 'visita' and h[6] in ['realizada', 'no_realizada'] %}
+                            <form method="POST"
+                                  action="/alertas/reversar_visita/{{ h[0] }}"
+                                  onsubmit="return confirm('¿Reversar esta visita y devolverla al dashboard?');">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                    Reversar
+                                </button>
+                            </form>
+                        {% else %}
+                            -
                         {% endif %}
                     </td>
 

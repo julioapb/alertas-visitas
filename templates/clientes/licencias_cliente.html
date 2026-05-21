@@ -30,47 +30,61 @@
                     <th>Estado</th>
                     <th>Fecha alerta</th>
                     <th>Fecha gestionada</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for h in historial_visitas %}
                 <tr>
-                    <td>#{{ h[0] }}</td>
+                    <td>#{{ h[1] }}</td>
                     <td>
-                        {% if h[1] %}
-                            <span class="badge bg-warning text-dark">{{ h[1] }}</span>
+                        {% if h[2] %}
+                            <span class="badge bg-warning text-dark">{{ h[2] }}</span>
                         {% else %}
                             -
                         {% endif %}
                     </td>
                     <td>
-                        {% if h[2] is not none %}
-                            {{ "%.2f"|format(h[2]) }} EUR
+                        {% if h[3] is not none %}
+                            {{ "%.2f"|format(h[3]) }} EUR
                         {% else %}
                             -
                         {% endif %}
                     </td>
                     <td>
-                        {% if h[3] %}
+                        {% if h[4] %}
                             Sí
                         {% else %}
                             
                         {% endif %}
                     </td>
                     <td>
-                        {% if h[4] == 'realizada' %}
+                        {% if h[5] == 'realizada' %}
                             <span class="badge bg-success">Realizada</span>
-                        {% elif h[4] == 'no_realizada' %}
+                        {% elif h[5] == 'no_realizada' %}
                             <span class="badge bg-danger">No realizada</span>
-                        {% elif h[4] == 'reprogramada' %}
+                        {% elif h[5] == 'reprogramada' %}
                             <span class="badge bg-warning text-dark">Reprogramada</span>
                         {% else %}
-                            <span class="badge bg-secondary">{{ h[4] }}</span>
+                            <span class="badge bg-secondary">{{ h[5] }}</span>
                         {% endif %}
                     </td>
-                    <td>{{ h[5]|fecha_es }}</td>
                     <td>{{ h[6]|fecha_es }}</td>
+                    <td>{{ h[7]|fecha_es }}</td>
+                    <td class="text-center">
+                        {% if h[5] in ['realizada', 'no_realizada'] %}
+                            <form method="POST"
+                                  action="/alertas/reversar_visita/{{ h[0] }}"
+                                  onsubmit="return confirm('¿Reversar esta visita y devolverla al dashboard?');">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                    Reversar
+                                </button>
+                            </form>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

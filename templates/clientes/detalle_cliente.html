@@ -104,6 +104,7 @@
                     <th>SF</th>
                     <th>Fecha alerta</th>
                     <th>Resultado</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -145,6 +146,19 @@
                             <small>{{ h.fecha_atendida|fecha_es }}</small>
                         {% else %}
                             {{ h.estado }}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if h.estado in ['realizada', 'no_realizada'] %}
+                            <form method="POST"
+                                  action="/alertas/reversar_visita/{{ h.historial_id }}"
+                                  onsubmit="return confirm('¿Reversar esta visita y devolverla al dashboard?');">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                    Reversar
+                                </button>
+                            </form>
+                        {% else %}
+                            -
                         {% endif %}
                     </td>
                 </tr>

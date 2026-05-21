@@ -173,6 +173,100 @@ def alerta_no_realizada(id_alerta):
 
     return redirect(url_for('dashboard'))
 
+
+# Reversar visita marcada como realizada / no realizada
+@alertas_bp.route('/reversar_visita/<int:id_historial>', methods=['POST'])
+def reversar_visita(id_historial):
+    if 'usuario' not in session:
+        return redirect(url_for('auth.login'))
+
+    mysql = current_app.mysql
+    cur = mysql.connection.cursor()
+
+    try:
+        cur.execute("""
+            SELECT id, id_cliente, id_visita, tipo, fecha_alerta, estado
+            FROM historial_alertas
+            WHERE id = %s
+        """, (id_historial,))
+        historial = cur.fetchone()
+
+        if not historial:
+            flash("No se encontro el registro del historial.", "danger")
+            cur.close()
+            return redirect(request.referrer or url_for('dashboard'))
+
+        id_cliente = historial[1]
+        id_visita = historial[2]
+        tipo = historial[3]
+        fecha_alerta = historial[4]
+        estado = historial[5]
+
+        if tipo != 'visita' or estado not in ['realizada', 'no_realizada'] or not id_visita:
+            flash("Solo se pueden reversar visitas realizadas o no realizadas.", "warning")
+            cur.close()
+            return redirect(request.referrer or url_for('dashboard'))
+
+        cur.execute("""
+            SELECT id, fecha_visita
+            FROM visitas_programadas
+            WHERE id = %s
+        """, (id_visita,))
+        visita = cur.fetchone()
+
+        if not visita:
+            flash("No se encontro la visita programada.", "danger")
+            cur.close()
+            return redirect(request.referrer or url_for('dashboard'))
+
+        fecha_visita = visita[1]
+        fecha_alerta = fecha_alerta or (fecha_visita - timedelta(days=2))
+
+        cur.execute("""
+            UPDATE visitas_programadas
+            SET estado = 'pendiente'
+            WHERE id = %s
+        """, (id_visita,))
+
+        cur.execute("""
+            SELECT id
+            FROM alertas
+            WHERE id_visita = %s
+              AND tipo = 'visita'
+        """, (id_visita,))
+        alerta_existente = cur.fetchone()
+
+        if alerta_existente:
+            cur.execute("""
+                UPDATE alertas
+                SET id_cliente = %s,
+                    fecha_alerta = %s,
+                    atendida = 0
+                WHERE id_visita = %s
+                  AND tipo = 'visita'
+            """, (id_cliente, fecha_alerta, id_visita))
+        else:
+            cur.execute("""
+                INSERT INTO alertas (id_cliente, id_visita, tipo, fecha_alerta, atendida)
+                VALUES (%s, %s, 'visita', %s, 0)
+            """, (id_cliente, id_visita, fecha_alerta))
+
+        cur.execute("""
+            DELETE FROM historial_alertas
+            WHERE id = %s
+        """, (id_historial,))
+
+        mysql.connection.commit()
+        flash("Visita reversada y devuelta al dashboard.", "success")
+
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f"Error al reversar la visita: {str(e)}", "danger")
+
+    cur.close()
+    return redirect(url_for('dashboard'))
+
+
 # Historial de alertas
 @alertas_bp.route('/historial')
 def historial_alertas():
