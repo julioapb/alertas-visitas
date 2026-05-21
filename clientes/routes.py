@@ -27,6 +27,11 @@ def clientes():
     mysql = current_app.mysql
     cur = mysql.connection.cursor()
 
+    per_page = 40
+    page = request.args.get("page", 1, type=int)
+    if page < 1:
+        page = 1
+
     nombre = request.args.get("nombre", "")
     nif = request.args.get("nif", "")
     telefono = request.args.get("telefono", "")
@@ -35,46 +40,64 @@ def clientes():
     ciudad = request.args.get("ciudad", "")
     cp = request.args.get("cp", "")
 
-    query = "SELECT * FROM clientes WHERE 1=1"
+    where = " WHERE 1=1"
     params = []
 
     if nombre:
-        query += " AND nombre LIKE %s"
+        where += " AND nombre LIKE %s"
         params.append(f"%{nombre}%")
 
     if nif:
-        query += " AND nif LIKE %s"
+        where += " AND nif LIKE %s"
         params.append(f"%{nif}%")
 
     if telefono:
-        query += " AND telefono LIKE %s"
+        where += " AND telefono LIKE %s"
         params.append(f"%{telefono}%")
 
     if tipo_cliente:
-        query += " AND tipo_cliente = %s"
+        where += " AND tipo_cliente = %s"
         params.append(tipo_cliente)
 
     if tipo_actividad:
-        query += " AND tipo_actividad = %s"
+        where += " AND tipo_actividad = %s"
         params.append(tipo_actividad)
 
     if ciudad:
-        query += " AND ciudad LIKE %s"
+        where += " AND ciudad LIKE %s"
         params.append(f"%{ciudad}%")
 
     if cp:
-        query += " AND codigo_postal LIKE %s"
+        where += " AND codigo_postal LIKE %s"
         params.append(f"%{cp}%")
 
-    query += " ORDER BY id DESC"
+    count_query = "SELECT COUNT(*) FROM clientes" + where
+    cur.execute(count_query, tuple(params))
+    total_clientes = cur.fetchone()[0]
 
-    cur.execute(query, tuple(params))
+    total_pages = (total_clientes + per_page - 1) // per_page
+    if total_pages and page > total_pages:
+        page = total_pages
+
+    offset = (page - 1) * per_page
+    query = "SELECT * FROM clientes" + where + " ORDER BY id DESC LIMIT %s OFFSET %s"
+    query_params = params + [per_page, offset]
+
+    cur.execute(query, tuple(query_params))
     data = cur.fetchall()
+
+    query_args = request.args.to_dict()
+    query_args.pop("page", None)
 
     return render_template(
         'clientes/clientes.html',
         clientes=data,
-        tipos_actividad=TIPOS_ACTIVIDAD
+        tipos_actividad=TIPOS_ACTIVIDAD,
+        page=page,
+        per_page=per_page,
+        total_clientes=total_clientes,
+        total_pages=total_pages,
+        query_args=query_args
     )
 
 
