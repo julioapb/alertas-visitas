@@ -22,6 +22,18 @@
                         value="{{ request.args.get('cliente', '') }}">
                 </div>
 
+                <div class="col-12 col-md-3">
+                    <label class="form-label">Tipo de actividad</label>
+                    <select name="tipo_actividad" class="form-select">
+                        <option value="">Todas</option>
+                        {% for tipo in tipos_actividad %}
+                            <option value="{{ tipo }}" {% if request.args.get('tipo_actividad') == tipo %}selected{% endif %}>
+                                {{ tipo }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="col-6 col-md-3">
                     <label class="form-label">Desde</label>
                     <input type="date" name="desde" class="form-control"

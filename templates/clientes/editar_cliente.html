@@ -45,8 +45,14 @@
                     <!-- ACTIVIDAD -->
                     <div class="col-12 col-md-6">
                         <label class="form-label">Tipo de actividad</label>
-                        <input type="text" name="tipo_actividad" class="form-control"
-                               value="{{ cliente[8] }}">
+                        <select name="tipo_actividad" class="form-select">
+                            <option value="">Selecciona</option>
+                            {% for tipo in tipos_actividad %}
+                                <option value="{{ tipo }}" {% if cliente[8] == tipo %}selected{% endif %}>
+                                    {{ tipo }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
 
                     <!-- NIF -->

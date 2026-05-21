@@ -7,6 +7,16 @@ import MySQLdb.cursors
 
 clientes_bp = Blueprint('clientes', __name__, template_folder='templates')
 
+TIPOS_ACTIVIDAD = [
+    "Comunidades",
+    "Naves",
+    "Peluqueria/ esteticas",
+    "Restaurantes",
+    "Tiendas/comercios",
+    "Fincas",
+    "Administración",
+]
+
 
 # ============================
 # LISTAR CLIENTES
@@ -21,6 +31,7 @@ def clientes():
     nif = request.args.get("nif", "")
     telefono = request.args.get("telefono", "")
     tipo_cliente = request.args.get("tipo_cliente", "")
+    tipo_actividad = request.args.get("tipo_actividad", "")
     ciudad = request.args.get("ciudad", "")
     cp = request.args.get("cp", "")
 
@@ -43,6 +54,10 @@ def clientes():
         query += " AND tipo_cliente = %s"
         params.append(tipo_cliente)
 
+    if tipo_actividad:
+        query += " AND tipo_actividad = %s"
+        params.append(tipo_actividad)
+
     if ciudad:
         query += " AND ciudad LIKE %s"
         params.append(f"%{ciudad}%")
@@ -56,7 +71,11 @@ def clientes():
     cur.execute(query, tuple(params))
     data = cur.fetchall()
 
-    return render_template('clientes/clientes.html', clientes=data)
+    return render_template(
+        'clientes/clientes.html',
+        clientes=data,
+        tipos_actividad=TIPOS_ACTIVIDAD
+    )
 
 
 # ============================
@@ -120,7 +139,11 @@ def editar_cliente(id):
     cur.execute("SELECT * FROM clientes WHERE id=%s", (id,))
     cliente = cur.fetchone()
 
-    return render_template("clientes/editar_cliente.html", cliente=cliente)
+    return render_template(
+        "clientes/editar_cliente.html",
+        cliente=cliente,
+        tipos_actividad=TIPOS_ACTIVIDAD
+    )
 
 
 # ============================
@@ -445,4 +468,7 @@ def nuevo_cliente():
 
         return redirect(url_for('clientes.clientes'))
 
-    return render_template("clientes/nuevo_cliente.html")
+    return render_template(
+        "clientes/nuevo_cliente.html",
+        tipos_actividad=TIPOS_ACTIVIDAD
+    )

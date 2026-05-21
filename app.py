@@ -13,6 +13,16 @@ app.config.from_object('config')
 mysql = MySQL(app)
 app.mysql = mysql
 
+TIPOS_ACTIVIDAD = [
+    "Comunidades",
+    "Naves",
+    "Peluqueria/ esteticas",
+    "Restaurantes",
+    "Tiendas/comercios",
+    "Fincas",
+    "Administración",
+]
+
 
 @app.template_filter('fecha_es')
 def fecha_es(value):
@@ -55,6 +65,7 @@ def dashboard():
     # FILTROS
     # =========================
     cliente = request.args.get('cliente', '')
+    tipo_actividad = request.args.get('tipo_actividad', '')
     desde = request.args.get('desde', '')
     hasta = request.args.get('hasta', '')
 
@@ -75,6 +86,10 @@ def dashboard():
     if cliente:
         query_visitas += " AND c.nombre LIKE %s"
         params_visitas.append(f"%{cliente}%")
+
+    if tipo_actividad:
+        query_visitas += " AND c.tipo_actividad = %s"
+        params_visitas.append(tipo_actividad)
 
     if desde:
         query_visitas += " AND a.fecha_alerta >= %s"
@@ -107,6 +122,10 @@ def dashboard():
         query_renov += " AND c.nombre LIKE %s"
         params_renov.append(f"%{cliente}%")
 
+    if tipo_actividad:
+        query_renov += " AND c.tipo_actividad = %s"
+        params_renov.append(tipo_actividad)
+
     if desde:
         query_renov += " AND a.fecha_alerta >= %s"
         params_renov.append(desde)
@@ -123,7 +142,8 @@ def dashboard():
     return render_template(
         'dashboard.html',
         alertas_visitas=alertas_visitas,
-        alertas_renov=alertas_renov
+        alertas_renov=alertas_renov,
+        tipos_actividad=TIPOS_ACTIVIDAD
     )
 
 

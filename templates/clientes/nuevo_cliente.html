@@ -23,7 +23,12 @@
 
         <!-- Tipo de actividad -->
         <label class="fw-bold mt-3">Tipo de actividad</label>
-        <input type="text" name="tipo_actividad" class="form-control">
+        <select name="tipo_actividad" class="form-select">
+            <option value="">Selecciona</option>
+            {% for tipo in tipos_actividad %}
+                <option value="{{ tipo }}">{{ tipo }}</option>
+            {% endfor %}
+        </select>
 
         <!-- NIF/CIF -->
         <label class="fw-bold mt-3">NIF/CIF</label>
