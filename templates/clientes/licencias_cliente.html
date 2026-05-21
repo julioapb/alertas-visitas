@@ -69,8 +69,8 @@
                             <span class="badge bg-secondary">{{ h[4] }}</span>
                         {% endif %}
                     </td>
-                    <td>{{ h[5] }}</td>
-                    <td>{{ h[6] }}</td>
+                    <td>{{ h[5]|fecha_es }}</td>
+                    <td>{{ h[6]|fecha_es }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -110,7 +110,7 @@
                 <tr>
 
                     <td>#{{ v[0] }}</td>
-                    <td>{{ v[1] }}</td>
+                    <td>{{ v[1]|fecha_es }}</td>
 
                     <td>
                         <span class="badge bg-warning text-dark">
@@ -160,7 +160,7 @@
 
                         <div class="modal-body">
 
-                            <p><strong>Fecha actual:</strong> {{ v[1] }}</p>
+                            <p><strong>Fecha actual:</strong> {{ v[1]|fecha_es }}</p>
                             <p><strong>Plaga:</strong> {{ v[2] }}</p>
 
                             <div class="mb-3">

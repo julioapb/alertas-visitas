@@ -102,14 +102,14 @@
 
                 <p class="mb-1"><strong>SF:</strong> {{ 'Sí' if h[5] else '' }}</p>
 
-                <p class="mb-1"><strong>Alerta:</strong> {{ h[7] }}</p>
+                <p class="mb-1"><strong>Alerta:</strong> {{ h[7]|fecha_es }}</p>
 
                 {% if h[6] == 'realizada' %}
-                    <p class="mb-1 text-success fw-bold">Realizada: {{ h[8] }}</p>
+                    <p class="mb-1 text-success fw-bold">Realizada: {{ h[8]|fecha_es }}</p>
                 {% elif h[6] == 'no_realizada' %}
-                    <p class="mb-1 text-danger fw-bold">No realizada: {{ h[8] }}</p>
+                    <p class="mb-1 text-danger fw-bold">No realizada: {{ h[8]|fecha_es }}</p>
                 {% elif h[6] == 'reprogramada' %}
-                    <p class="mb-1 text-warning fw-bold">Reprogramada: {{ h[8] }}</p>
+                    <p class="mb-1 text-warning fw-bold">Reprogramada: {{ h[8]|fecha_es }}</p>
                 {% endif %}
 
             </div>
@@ -165,18 +165,18 @@
 
                     <td>{{ 'Sí' if h[5] else '' }}</td>
 
-                    <td>{{ h[7] }}</td>
+                    <td>{{ h[7]|fecha_es }}</td>
 
                     <td>
                         {% if h[6] == 'realizada' %}
                             <span class="text-success fw-bold">Realizada</span><br>
-                            <small>{{ h[8] }}</small>
+                            <small>{{ h[8]|fecha_es }}</small>
                         {% elif h[6] == 'no_realizada' %}
                             <span class="text-danger fw-bold">No realizada</span><br>
-                            <small>{{ h[8] }}</small>
+                            <small>{{ h[8]|fecha_es }}</small>
                         {% elif h[6] == 'reprogramada' %}
                             <span class="text-warning fw-bold">Reprogramada</span><br>
-                            <small>{{ h[8] }}</small>
+                            <small>{{ h[8]|fecha_es }}</small>
                         {% endif %}
                     </td>
 

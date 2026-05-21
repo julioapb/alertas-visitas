@@ -82,8 +82,8 @@
                             {% endif %}
                         </p>
 
-                        <p class="mb-1">📅 Visita: {{ a[2] }}</p>
-                        <p class="mb-2 text-muted">Alerta: {{ a[3] }}</p>
+                        <p class="mb-1">📅 Visita: {{ a[2]|fecha_es }}</p>
+                        <p class="mb-2 text-muted">Alerta: {{ a[3]|fecha_es }}</p>
 
                         <form method="POST" action="{{ url_for('alertas.alerta_realizada', id_alerta=a[0]) }}">
                             <button type="submit" class="btn btn-success w-100 mb-2">
@@ -130,7 +130,7 @@
                         <div class="modal-body">
                           <p><strong>Cliente:</strong> {{ a[1] }}</p>
                           <p><strong>ID visita:</strong> #{{ a[4] }}</p>
-                          <p><strong>Fecha actual:</strong> {{ a[2] }}</p>
+                          <p><strong>Fecha actual:</strong> {{ a[2]|fecha_es }}</p>
                           <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
 
                           <div class="mb-3">
@@ -161,7 +161,7 @@
                         <div class="modal-body">
                           <p><strong>Cliente:</strong> {{ a[1] }}</p>
                           <p><strong>ID visita:</strong> #{{ a[4] }}</p>
-                          <p><strong>Fecha:</strong> {{ a[2] }}</p>
+                          <p><strong>Fecha:</strong> {{ a[2]|fecha_es }}</p>
                           <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
                           
                           <div class="alert alert-warning" role="alert">
@@ -202,7 +202,7 @@
 
                             <td class="fw-bold cell-truncate" title="{{ a[1] }}">{{ a[1] }}</td>
                             <td>#{{ a[4] }}</td>
-                            <td>{{ a[2] }}</td>
+                            <td>{{ a[2]|fecha_es }}</td>
                             <td>
                                 {% if a[5] %}
                                     <span class="badge bg-info text-dark">{{ a[5] }}</span>
@@ -210,7 +210,7 @@
                                     -
                                 {% endif %}
                             </td>
-                            <td>{{ a[3] }}</td>
+                            <td>{{ a[3]|fecha_es }}</td>
 
                             <td>
                                 <div class="dashboard-actions">
@@ -269,7 +269,7 @@
                                 <div class="modal-body">
                                   <p><strong>Cliente:</strong> {{ a[1] }}</p>
                                   <p><strong>ID visita:</strong> #{{ a[4] }}</p>
-                                  <p><strong>Fecha actual:</strong> {{ a[2] }}</p>
+                                  <p><strong>Fecha actual:</strong> {{ a[2]|fecha_es }}</p>
                                   <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
 
                                   <div class="mb-3">
@@ -300,7 +300,7 @@
                                 <div class="modal-body">
                                   <p><strong>Cliente:</strong> {{ a[1] }}</p>
                                   <p><strong>ID visita:</strong> #{{ a[4] }}</p>
-                                  <p><strong>Fecha:</strong> {{ a[2] }}</p>
+                                  <p><strong>Fecha:</strong> {{ a[2]|fecha_es }}</p>
                                   <p><strong>Plaga:</strong> {{ a[5] or '-' }}</p>
                                   
                                   <div class="alert alert-warning" role="alert">
@@ -351,8 +351,8 @@
 
                         <h5 class="fw-bold">{{ a[1] }}</h5>
 
-                        <p class="mb-1">📅 Vence: {{ a[2] }}</p>
-                        <p class="mb-2 text-muted">Alerta: {{ a[3] }}</p>
+                        <p class="mb-1">📅 Vence: {{ a[2]|fecha_es }}</p>
+                        <p class="mb-2 text-muted">Alerta: {{ a[3]|fecha_es }}</p>
 
                         <a href="#" class="btn btn-primary w-100">
                             Renovar cliente
@@ -382,8 +382,8 @@
                         <tr>
 
                             <td class="fw-bold">{{ a[1] }}</td>
-                            <td>{{ a[2] }}</td>
-                            <td>{{ a[3] }}</td>
+                            <td>{{ a[2]|fecha_es }}</td>
+                            <td>{{ a[3]|fecha_es }}</td>
 
                             <td class="text-center">
                                 <a href="#" class="btn btn-primary btn-sm">

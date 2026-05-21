@@ -4,7 +4,7 @@ from auth.routes import auth_bp
 from clientes.routes import clientes_bp
 from alertas.routes import alertas_bp, generar_alertas
 from flask import render_template, session, redirect, url_for, request
-from datetime import date
+from datetime import date, datetime
 from revisiones.routes import revisiones_bp
 
 app = Flask(__name__)
@@ -12,6 +12,28 @@ app.config.from_object('config')
 
 mysql = MySQL(app)
 app.mysql = mysql
+
+
+@app.template_filter('fecha_es')
+def fecha_es(value):
+    if not value:
+        return ''
+
+    if isinstance(value, datetime):
+        return value.strftime('%d/%m/%Y %H:%M')
+
+    if isinstance(value, date):
+        return value.strftime('%d/%m/%Y')
+
+    if isinstance(value, str):
+        for formato in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
+            try:
+                fecha = datetime.strptime(value, formato)
+                return fecha.strftime('%d/%m/%Y %H:%M' if ' ' in value else '%d/%m/%Y')
+            except ValueError:
+                pass
+
+    return value
 
 # Registrar los Blueprints
 app.register_blueprint(auth_bp)
